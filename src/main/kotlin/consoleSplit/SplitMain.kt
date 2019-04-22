@@ -7,12 +7,12 @@ enum class TypeOfWork {
 }
 
 fun isCorrectInput(arg: String) {
-    if(!((arg.matches(Regex("""^split (-d)? ((-l|-c|-n) [1-9]+\d*)? (-o .+)? .+$""")))||
-                (arg.matches(Regex("""^split (-d)? (-o .+)? ((-l|-c|-n) [1-9]+\d*)? .+$""")))||
-                (arg.matches(Regex("""^split ((-l|-c|-n) [1-9]+\d*)? (-o .+)? (-d)? .+$""")))||
-                (arg.matches(Regex("""^split ((-l|-c|-n) [1-9]+\d*)? (-d)? (-o .+)? .+$""")))||
-                (arg.matches(Regex("""^split (-o .+)? (-d)? ((-l|-c|-n) [1-9]+\d*)? .+$""")))||
-                (arg.matches(Regex("""^split (-o .+)? ((-l|-c|-n) [1-9]+\d*)? (-d)? .+$""")))))
+    if(!((arg.matches(Regex("""^split( -d)?( (-l|-c|-n) [1-9]+\d*)?( -o .+)? .+$""")))||
+                (arg.matches(Regex("""^split( -d)?( -o .+)?( (-l|-c|-n) [1-9]+\d*)? .+$""")))||
+                (arg.matches(Regex("""^split( (-l|-c|-n) [1-9]+\d*)?( -o .+)?( -d)? .+$""")))||
+                (arg.matches(Regex("""^split( (-l|-c|-n) [1-9]+\d*)?( -d)?( -o .+)? .+$""")))||
+                (arg.matches(Regex("""^split( -o .+)?( -d)?( (-l|-c|-n) [1-9]+\d*)? .+$""")))||
+                (arg.matches(Regex("""^split( -o .+)?( (-l|-c|-n) [1-9]+\d*)?( -d)? .+$""")))))
         throw IllegalArgumentException("Incorrect input format")
 }
 
@@ -94,13 +94,15 @@ fun main(args: Array<String>) {
             var fOutput = nextFile(fBaseOutput, enNumer, i)
             var writer = File(fOutput).bufferedWriter()
             for (line in File(fInput).readLines()) {
-                if(j==(uoM-1)) {
+                if(j==uoM) {
                     writer.close()
                     i++
                     fOutput = nextFile(fBaseOutput, enNumer, i)
                     writer = File(fOutput).bufferedWriter()
+                    j = 0
                 }
                 writer.write(line)
+                writer.newLine()
                 j++
             }
             writer.close()
