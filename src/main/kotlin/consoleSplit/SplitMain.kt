@@ -1,6 +1,7 @@
 package consoleSplit
 
 import java.io.File
+import java.lang.StringBuilder
 
 enum class TypeOfWork {
     L, C, N
@@ -100,6 +101,40 @@ fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
     writer.close()
 }
 
+fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
+    val inpStr = StringBuilder()
+    val r = File(fInput).reader()
+    var c = r.read()
+    while (c != -1) {
+        inpStr.append(c.toChar())
+        c = r.read()
+    }
+    r.close()
+    //println(inpStr.toString())
+
+    val outputSize = inpStr.toString().length / mFiles
+
+    //println(inpStr.length)
+    //println (outputSize)
+
+    var i = 0
+    var j = 0
+    var fOutput = nextFile(fBaseOutput, enNumer, i)
+    var writer = File(fOutput).bufferedWriter()
+    for (charS in inpStr.toString()) {
+        writer.write(charS.toInt())
+        j++
+        if(j > outputSize) {
+            writer.close()
+            i++
+            fOutput = nextFile(fBaseOutput, enNumer, i)
+            writer = File(fOutput).bufferedWriter()
+            j = 1
+        }
+    }
+    writer.close()
+}
+
 
 fun main(args: Array<String>) {
 
@@ -130,9 +165,10 @@ fun main(args: Array<String>) {
     if (!File(fInput).exists())
         throw IllegalArgumentException("Input file does not exist")
 
-    when {
-        toW == TypeOfWork.L -> lWork(fInput, fBaseOutput, uoM, enNumer)
-        toW == TypeOfWork.C -> cWork(fInput, fBaseOutput, uoM, enNumer)
+    when (toW) {
+        TypeOfWork.L -> lWork(fInput, fBaseOutput, uoM, enNumer)
+        TypeOfWork.C -> cWork(fInput, fBaseOutput, uoM, enNumer)
+        TypeOfWork.N -> nWork(fInput, fBaseOutput, uoM, enNumer)
     }
 }
 
