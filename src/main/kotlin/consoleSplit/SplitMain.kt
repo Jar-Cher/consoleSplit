@@ -57,6 +57,49 @@ fun nextFile(baseName: String, shouldEnum: Boolean, i: Int): String {
     }
 }
 
+fun lWork(fInput: String, fBaseOutput: String, mLines: Int, enNumer: Boolean) {
+    var i = 0
+    var j = 0
+    var fOutput = nextFile(fBaseOutput, enNumer, i)
+    var writer = File(fOutput).bufferedWriter()
+    for (line in File(fInput).readLines()) {
+        if(j==mLines) {
+            writer.close()
+            i++
+            fOutput = nextFile(fBaseOutput, enNumer, i)
+            writer = File(fOutput).bufferedWriter()
+            j = 0
+        }
+        writer.write(line)
+        writer.newLine()
+        j++
+    }
+    writer.close()
+}
+
+fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
+    var i = 0
+    var j = 0
+    var fOutput = nextFile(fBaseOutput, enNumer, i)
+    var writer = File(fOutput).bufferedWriter()
+    val r = File(fInput).reader()
+    var c = r.read()
+    while (c != -1) {
+        if(j==mChars) {
+            writer.close()
+            i++
+            fOutput = nextFile(fBaseOutput, enNumer, i)
+            writer = File(fOutput).bufferedWriter()
+            j = 0
+        }
+        writer.write(c)
+        c = r.read()
+        if(!c.toChar().toString().matches(Regex("""\r""")))
+            j++
+    }
+    writer.close()
+}
+
 
 fun main(args: Array<String>) {
 
@@ -88,25 +131,8 @@ fun main(args: Array<String>) {
         throw IllegalArgumentException("Input file does not exist")
 
     when {
-        toW == TypeOfWork.L -> {
-            var i = 0
-            var j = 0
-            var fOutput = nextFile(fBaseOutput, enNumer, i)
-            var writer = File(fOutput).bufferedWriter()
-            for (line in File(fInput).readLines()) {
-                if(j==uoM) {
-                    writer.close()
-                    i++
-                    fOutput = nextFile(fBaseOutput, enNumer, i)
-                    writer = File(fOutput).bufferedWriter()
-                    j = 0
-                }
-                writer.write(line)
-                writer.newLine()
-                j++
-            }
-            writer.close()
-        }
+        toW == TypeOfWork.L -> lWork(fInput, fBaseOutput, uoM, enNumer)
+        toW == TypeOfWork.C -> cWork(fInput, fBaseOutput, uoM, enNumer)
     }
 }
 
