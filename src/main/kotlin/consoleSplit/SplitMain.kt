@@ -7,7 +7,7 @@ enum class TypeOfWork {
     L, C, N
 }
 
-fun isCorrectInput(arg: String) {
+/*fun isCorrectInput1(arg: String) {
     if(!((arg.matches(Regex("""^split( -d)?( (-l|-c|-n) [1-9]+\d*)?( -o .+)? .+$""")))||
                 (arg.matches(Regex("""^split( -d)?( -o .+)?( (-l|-c|-n) [1-9]+\d*)? .+$""")))||
                 (arg.matches(Regex("""^split( (-l|-c|-n) [1-9]+\d*)?( -o .+)?( -d)? .+$""")))||
@@ -15,6 +15,48 @@ fun isCorrectInput(arg: String) {
                 (arg.matches(Regex("""^split( -o .+)?( -d)?( (-l|-c|-n) [1-9]+\d*)? .+$""")))||
                 (arg.matches(Regex("""^split( -o .+)?( (-l|-c|-n) [1-9]+\d*)?( -d)? .+$""")))))
         throw IllegalArgumentException("Incorrect input format")
+}*/
+
+fun isCorrectInput(args: Array<String>){
+    var amountOfValidElements = 2
+
+    if(args.first() != "split")
+        throw IllegalArgumentException("Incorrect initial command")
+
+    val dCount = args.count{it == "-d"}
+    if(dCount > 1)
+        throw IllegalArgumentException("Odd amount of -d flag")
+    amountOfValidElements += dCount
+
+    val lCount = args.count { it == "-l" }
+    val cCount = args.count { it == "-c" }
+    val nCount = args.count { it == "-n" }
+    val wCount = lCount + cCount + nCount
+    if(wCount > 1)
+        throw IllegalArgumentException("Odd amount of -l/-c/-n flag")
+    amountOfValidElements += wCount
+    when {
+        lCount > 0 -> if (!args.getOrElse(args.indexOf("-l") + 1) {"olo"}.matches(Regex("""[1-9]+\d*""")))
+            throw IllegalArgumentException("Incorrect number of lines given")
+        cCount > 0 -> if (!args.getOrElse(args.indexOf("-c") + 1) {"olo"}.matches(Regex("""[1-9]+\d*""")))
+            throw IllegalArgumentException("Incorrect number of symbols given")
+        nCount > 0 -> if (!args.getOrElse(args.indexOf("-n") + 1) {"olo"}.matches(Regex("""[1-9]+\d*""")))
+            throw IllegalArgumentException("Incorrect number of files given")
+    }
+    amountOfValidElements++
+
+    val oCount = args.count{it == "-o"}
+    if(oCount > 1)
+        throw IllegalArgumentException("Odd amount of -o flag")
+    amountOfValidElements += oCount
+    if(oCount > 0) {
+        if (args.indexOf("-o") + 1 == args.size)
+            throw IllegalArgumentException("Output file not given")
+        amountOfValidElements++
+    }
+
+    if(amountOfValidElements != args.size)
+        throw IllegalArgumentException("Incorrect command")
 }
 
 fun shouldEnum(arg: String): Boolean = arg.contains(Regex("""-d"""))
@@ -50,10 +92,12 @@ fun nextFile(baseName: String, shouldEnum: Boolean, i: Int): String {
         baseName + (i + 1).toString()
     }
     else {
-        if (i > 676)
+        if(i > 676)
             throw java.lang.IllegalArgumentException("Incorrect output configuration")
-        val fLetter = (97 + i / 26).toChar()
-        val sLetter = (97 + i % 26).toChar()
+        //val fLetter = (97 + i / 26).toChar()
+        //val sLetter = (97 + i % 26).toChar()
+        val fLetter = 'a' + i / 26
+        val sLetter = 'a' + i % 26
         baseName + fLetter + sLetter
     }
 }
@@ -133,6 +177,11 @@ fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
         }
     }
     writer.close()
+    for(k in (i + 1) until mFiles) {
+        fOutput = nextFile(fBaseOutput, enNumer, k)
+        writer = File(fOutput).bufferedWriter()
+        writer.close()
+    }
 }
 
 
@@ -140,7 +189,7 @@ fun main(args: Array<String>) {
 
     val arg = args.joinToString(separator = " ")
 
-    isCorrectInput(arg)
+    isCorrectInput(args)
 
     val fInput = inpFile(args)
 
