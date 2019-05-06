@@ -2,6 +2,7 @@ package consoleSplit
 
 import java.io.File
 import java.lang.StringBuilder
+import kotlin.math.ceil
 
 enum class TypeOfWork {
     L, C, N
@@ -26,7 +27,7 @@ data class Parser(val args: Array<String>) {
 
     init {
 
-        if(args.isEmpty())
+        if (args.isEmpty())
             throw IllegalArgumentException("Please enter command")
         inpFile = args.last()
         var amountOfValidElements = 1
@@ -114,11 +115,10 @@ fun unitsOfMeasurement(args: Array<String>): Int = when {
 }*/
 
 fun nextFile(baseName: String, shouldEnum: Boolean, i: Int): String {
-    return if(shouldEnum) {
+    return if (shouldEnum) {
         baseName + (i + 1).toString()
-    }
-    else {
-        if(i > 676)
+    } else {
+        if (i > 676)
             throw java.lang.IllegalArgumentException("Incorrect output configuration")
         val fLetter = 'a' + i / 26
         val sLetter = 'a' + i % 26
@@ -132,7 +132,7 @@ fun lWork(fInput: String, fBaseOutput: String, mLines: Int, enNumer: Boolean) {
     var fOutput = nextFile(fBaseOutput, enNumer, i)
     var writer = File(fOutput).bufferedWriter()
     for (line in File(fInput).readLines()) {
-        if(j==mLines) {
+        if (j == mLines) {
             writer.close()
             i++
             fOutput = nextFile(fBaseOutput, enNumer, i)
@@ -154,7 +154,7 @@ fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
     val r = File(fInput).reader()
     var c = r.read()
     while (c != -1) {
-        if(j==mChars) {
+        if (j == mChars) {
             writer.close()
             i++
             fOutput = nextFile(fBaseOutput, enNumer, i)
@@ -164,7 +164,7 @@ fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
         writer.write(c)
         c = r.read()
         //if(!c.toChar().toString().matches(Regex("""\r""")))
-            j++
+        j++
     }
     writer.close()
 }
@@ -180,7 +180,7 @@ fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
     r.close()
     //println(inpStr.toString())
 
-    val outputSize = inpStr.toString().length / mFiles
+    val outputSize = ceil(inpStr.toString().length / mFiles.toDouble()).toInt()
 
     //println(inpStr.length)
     //println (outputSize)
@@ -202,14 +202,14 @@ fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
     }
     */
 
-    if(mFiles < inpStr.toString().length)
+    if (mFiles < inpStr.toString().length)
         cWork(fInput, fBaseOutput, outputSize, enNumer)
     else {
         cWork(fInput, fBaseOutput, 1, enNumer)
         //val i = mFiles - inpStr.toString().length
         var fOutput: String
 
-        for(k in inpStr.toString().length until mFiles) {
+        for (k in inpStr.toString().length until mFiles) {
             fOutput = nextFile(fBaseOutput, enNumer, k)
             val writer = File(fOutput).bufferedWriter()
             writer.close()
