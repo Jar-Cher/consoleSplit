@@ -1,7 +1,6 @@
 package consoleSplit
 
 import java.io.File
-import java.lang.StringBuilder
 import kotlin.math.ceil
 
 enum class TypeOfWork {
@@ -19,17 +18,17 @@ enum class TypeOfWork {
 }*/
 data class Parser(val args: Array<String>) {
 
-    var sNumer = false
+    var shouldEnumerate = false
     var workToDo = TypeOfWork.L
     var unitsOfMeasurement = 100
     var outputFile = "x"
-    var inpFile = "Nope"
+    var inputFile = "Nope"
 
     init {
 
         if (args.isEmpty())
             throw IllegalArgumentException("Please enter command")
-        inpFile = args.last()
+        inputFile = args.last()
         var amountOfValidElements = 1
 
         val dCount = args.count { it == "-d" }
@@ -37,7 +36,7 @@ data class Parser(val args: Array<String>) {
             throw IllegalArgumentException("Odd amount of -d flag")
         amountOfValidElements += dCount
         if (dCount == 1)
-            sNumer = true
+            shouldEnumerate = true
 
         val lCount = args.count { it == "-l" }
         val cCount = args.count { it == "-c" }
@@ -79,7 +78,7 @@ data class Parser(val args: Array<String>) {
                 throw IllegalArgumentException("Output file not given")
             outputFile = args[args.indexOf("-o") + 1]
             if (outputFile == "-")
-                outputFile = inpFile
+                outputFile = inputFile
             amountOfValidElements++
         }
 
@@ -114,29 +113,29 @@ fun unitsOfMeasurement(args: Array<String>): Int = when {
     else -> 100
 }*/
 
-fun nextFile(baseName: String, shouldEnum: Boolean, i: Int): String {
-    return if (shouldEnum) {
+fun nextFile(baseName: String, shouldEnumerate: Boolean, i: Int): String {
+    return if (shouldEnumerate) {
         baseName + (i + 1).toString()
     } else {
-        if (i > 676)
+        if (i > 675)
             throw java.lang.IllegalArgumentException("Incorrect output configuration")
-        val fLetter = 'a' + i / 26
-        val sLetter = 'a' + i % 26
-        baseName + fLetter + sLetter
+        val firstLetter = 'a' + i / 26
+        val secondLetter = 'a' + i % 26
+        baseName + firstLetter + secondLetter
     }
 }
 
-fun lWork(fInput: String, fBaseOutput: String, mLines: Int, enNumer: Boolean) {
+fun lWork(inputFile: String, baseOutputFile: String, maxLines: Int, shouldEnumerate: Boolean) {
     var i = 0
     var j = 0
-    var fOutput = nextFile(fBaseOutput, enNumer, i)
-    var writer = File(fOutput).bufferedWriter()
-    for (line in File(fInput).readLines()) {
-        if (j == mLines) {
+    var outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
+    var writer = File(outputFile).bufferedWriter()
+    for (line in File(inputFile).readLines()) {
+        if (j == maxLines) {
             writer.close()
             i++
-            fOutput = nextFile(fBaseOutput, enNumer, i)
-            writer = File(fOutput).bufferedWriter()
+            outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
+            writer = File(outputFile).bufferedWriter()
             j = 0
         }
         writer.write(line)
@@ -146,19 +145,19 @@ fun lWork(fInput: String, fBaseOutput: String, mLines: Int, enNumer: Boolean) {
     writer.close()
 }
 
-fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
+fun cWork(inputFile: String, baseOutputFile: String, maxChars: Int, shouldEnumerate: Boolean) {
     var i = 0
     var j = 0
-    var fOutput = nextFile(fBaseOutput, enNumer, i)
-    var writer = File(fOutput).bufferedWriter()
-    val r = File(fInput).reader()
+    var outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
+    var writer = File(outputFile).bufferedWriter()
+    val r = File(inputFile).reader()
     var c = r.read()
     while (c != -1) {
-        if (j == mChars) {
+        if (j == maxChars) {
             writer.close()
             i++
-            fOutput = nextFile(fBaseOutput, enNumer, i)
-            writer = File(fOutput).bufferedWriter()
+            outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
+            writer = File(outputFile).bufferedWriter()
             j = 0
         }
         writer.write(c)
@@ -169,25 +168,16 @@ fun cWork(fInput: String, fBaseOutput: String, mChars: Int, enNumer: Boolean) {
     writer.close()
 }
 
-fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
-    val inpStr = StringBuilder()
-    val r = File(fInput).reader()
-    var c = r.read()
-    while (c != -1) {
-        inpStr.append(c.toChar())
-        c = r.read()
-    }
-    r.close()
-    //println(inpStr.toString())
+fun nWork(inputFile: String, baseOutputFile: String, maxFiles: Int, shouldEnumerate: Boolean) {
 
-    val outputSize = ceil(inpStr.toString().length / mFiles.toDouble()).toInt()
+    val outputSize = ceil(File(inputFile).length() / maxFiles.toDouble()).toInt()
 
     //println(inpStr.length)
     //println (outputSize)
 
     /*var i = 0
     var j = 0
-    var fOutput = nextFile(fBaseOutput, enNumer, i)
+    var fOutput = nextFile(baseOutputFile, shouldEnumerate, i)
     var writer = File(fOutput).bufferedWriter()
     for (charS in inpStr.toString()) {
         writer.write(charS.toInt())
@@ -195,23 +185,23 @@ fun nWork(fInput: String, fBaseOutput: String, mFiles: Int, enNumer: Boolean) {
         if(j > outputSize) {
             writer.close()
             i++
-            fOutput = nextFile(fBaseOutput, enNumer, i)
+            fOutput = nextFile(baseOutputFile, shouldEnumerate, i)
             writer = File(fOutput).bufferedWriter()
             j = 1
         }
     }
     */
 
-    if (mFiles < inpStr.toString().length)
-        cWork(fInput, fBaseOutput, outputSize, enNumer)
+    if (maxFiles < File(inputFile).length())
+        cWork(inputFile, baseOutputFile, outputSize, shouldEnumerate)
     else {
-        cWork(fInput, fBaseOutput, 1, enNumer)
-        //val i = mFiles - inpStr.toString().length
-        var fOutput: String
+        cWork(inputFile, baseOutputFile, 1, shouldEnumerate)
+        //val i = maxFiles - inpStr.toString().length
+        var outputFile: String
 
-        for (k in inpStr.toString().length until mFiles) {
-            fOutput = nextFile(fBaseOutput, enNumer, k)
-            val writer = File(fOutput).bufferedWriter()
+        for (k in File(inputFile).length() until maxFiles) {
+            outputFile = nextFile(baseOutputFile, shouldEnumerate, k.toInt())
+            val writer = File(outputFile).bufferedWriter()
             writer.close()
         }
     }
@@ -222,17 +212,17 @@ fun main(args: Array<String>) {
 
     val parser = Parser(args)
 
-    val fInput = parser.inpFile
+    val inputFile = parser.inputFile
 
-    val enNumer = parser.sNumer
+    val shouldEnumerate = parser.shouldEnumerate
 
     // Default type of work
-    val toW = parser.workToDo
+    val workToDo = parser.workToDo
 
     // Default units of measurement
-    val uoM = parser.unitsOfMeasurement
+    val unitsOfMeasurement = parser.unitsOfMeasurement
 
-    val fBaseOutput = parser.outputFile
+    val baseOutputFile = parser.outputFile
 
     /*
     println(enNumer)
@@ -242,13 +232,13 @@ fun main(args: Array<String>) {
     println(fInput)
     */
 
-    if (!File(fInput).exists())
+    if (!File(inputFile).exists())
         throw IllegalArgumentException("Input file does not exist")
 
-    when (toW) {
-        TypeOfWork.L -> lWork(fInput, fBaseOutput, uoM, enNumer)
-        TypeOfWork.C -> cWork(fInput, fBaseOutput, uoM, enNumer)
-        TypeOfWork.N -> nWork(fInput, fBaseOutput, uoM, enNumer)
+    when (workToDo) {
+        TypeOfWork.L -> lWork(inputFile, baseOutputFile, unitsOfMeasurement, shouldEnumerate)
+        TypeOfWork.C -> cWork(inputFile, baseOutputFile, unitsOfMeasurement, shouldEnumerate)
+        TypeOfWork.N -> nWork(inputFile, baseOutputFile, unitsOfMeasurement, shouldEnumerate)
     }
 }
 
