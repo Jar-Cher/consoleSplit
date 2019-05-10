@@ -130,7 +130,7 @@ fun lWork(inputFile: String, baseOutputFile: String, maxLines: Int, shouldEnumer
     var j = 0
     var outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
     var writer = File(outputFile).bufferedWriter()
-    val lines = File(inputFile).readLines()
+    val lines = File(inputFile).readText().lines()
     for (line in lines) {
         if (j == maxLines) {
             writer.close()
