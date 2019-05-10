@@ -140,7 +140,7 @@ fun lWork(inputFile: String, baseOutputFile: String, maxLines: Int, shouldEnumer
             j = 0
         }
         writer.write(line)
-        if (line != lines.last())
+        if (((line != lines.last()) && ((j + 1) != maxLines)))
             writer.newLine()
         j++
     }
@@ -172,7 +172,7 @@ fun cWork(inputFile: String, baseOutputFile: String, maxChars: Int, shouldEnumer
 
 fun nWork(inputFile: String, baseOutputFile: String, maxFiles: Int, shouldEnumerate: Boolean) {
 
-    val outputSize = ceil(File(inputFile).length() / maxFiles.toDouble()).toInt()
+    val outputSize = ceil(File(inputFile).readText().replace("\r\n","\n").length / maxFiles.toDouble()).toInt()
 
     //println(inpStr.length)
     //println (outputSize)
