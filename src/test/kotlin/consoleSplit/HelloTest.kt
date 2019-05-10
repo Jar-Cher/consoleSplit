@@ -11,13 +11,13 @@ class HelloTest {
 
     private fun assertFileContent(name: String, expectedContent: String) {
 
-        val file = File(name).reader()
-        val content = StringBuilder(128)
+        val content = File(name).readText()//.replace("\r\n","\n" )
+        /*val content = StringBuilder(128)
         var c = file.read()
         while (c != -1) {
             content.append(c.toChar())
             c = file.read()
-        }
+        }*/
         assertEquals(expectedContent, content.toString())
     }
 
