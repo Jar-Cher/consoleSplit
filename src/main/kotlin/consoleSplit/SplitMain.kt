@@ -127,22 +127,19 @@ fun nextFile(baseName: String, shouldEnumerate: Boolean, i: Int): String {
 
 fun lWork(inputFile: String, baseOutputFile: String, maxLines: Int, shouldEnumerate: Boolean) {
     var i = 0
-    var j = 0
     var outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
     var writer = File(outputFile).bufferedWriter()
     val lines = File(inputFile).readText().lines()
-    for (line in lines) {
-        if (j == maxLines) {
+    for (j in 0 until lines.size) {
+        if (((j % maxLines) == 0) && (j != 0)) {
             writer.close()
             i++
             outputFile = nextFile(baseOutputFile, shouldEnumerate, i)
             writer = File(outputFile).bufferedWriter()
-            j = 0
         }
-        writer.write(line)
-        if (((line != lines.last()) && ((j + 1) != maxLines)))
+        writer.write(lines[j])
+        if ((j != (lines.size - 1)) && (((j + 1) % maxLines) != 0))
             writer.newLine()
-        j++
     }
     writer.close()
 }
@@ -172,7 +169,7 @@ fun cWork(inputFile: String, baseOutputFile: String, maxChars: Int, shouldEnumer
 
 fun nWork(inputFile: String, baseOutputFile: String, maxFiles: Int, shouldEnumerate: Boolean) {
 
-    val outputSize = ceil(File(inputFile).readText().replace("\r\n","\n").length / maxFiles.toDouble()).toInt()
+    val outputSize = ceil(File(inputFile).length() / maxFiles.toDouble()).toInt()
 
     //println(inpStr.length)
     //println (outputSize)

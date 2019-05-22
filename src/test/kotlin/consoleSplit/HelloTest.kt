@@ -98,15 +98,15 @@ more something"""
     @Test
     fun testNWork() {
         nWork("input.txt", "x", 3, false)
-        assertFileContent("xaa", """something somet""")
+        assertFileContent("xaa", """something someth""")
         nWork("inp.txt", "ololo", 8, true)
         assertFileContent("ololo1", """""")
         File("ololo1").delete()
     }
 
     @Test
-    fun uberTest() {
-        for (i in 1..3) {
+    fun randomNTest() {
+        for (i in 1..10) {
 
             val defaultInputFile = "autoTestInput"
             val textSize = 128
@@ -135,12 +135,34 @@ more something"""
                     val textChunked = text.chunked(textSize / fraction)
                     assertFileContent(
                         nextFile(defaultOutputFile, shouldEnumerate, k - 1),
-                        textChunked[k - 1])
+                        textChunked[k - 1]
+                    )
 
                     File(nextFile(defaultOutputFile, shouldEnumerate, k - 1)).delete()
                 }
+            }
+        }
+    }
+
+    @Test
+    fun randomCTest() {
+        for (i in 1..10) {
+
+            val defaultInputFile = "autoTestInput"
+            val textSize = 128
+            val defaultOutputFile = "x"
+            val shouldEnumerate = true
+            val text = generateText(textSize)
+
+            val inp = File(defaultInputFile).bufferedWriter()
+            inp.write(text)
+            inp.close()
+
+            for (j in 0..7) {
 
                 // Testing -c Flag
+                val fraction = Math.pow(2.0, j.toDouble()).toInt()
+
                 cWork(
                     defaultInputFile,
                     defaultOutputFile,
@@ -148,17 +170,34 @@ more something"""
                     shouldEnumerate
                 )
 
+                val textChunked = text.chunked(fraction)
+
                 for (k in 1..textSize / fraction) {
 
-                    val textChunked = text.chunked(fraction)
                     assertFileContent(
                         nextFile(defaultOutputFile, shouldEnumerate, k - 1),
-                        textChunked[k - 1])
+                        textChunked[k - 1]
+                    )
 
                     File(nextFile(defaultOutputFile, shouldEnumerate, k - 1)).delete()
                 }
-
             }
+        }
+    }
+
+    @Test
+    fun randomLTest() {
+        for (i in 1..100) {
+
+            val defaultInputFile = "autoTestInput"
+            val textSize = 128
+            val defaultOutputFile = "x"
+            val shouldEnumerate = true
+            val text = generateText(textSize)
+
+            val inp = File(defaultInputFile).bufferedWriter()
+            inp.write(text)
+            inp.close()
 
             // Testing -l Flag
             val textLined = text.lines()
